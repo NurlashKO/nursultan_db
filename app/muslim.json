@@ -1,0 +1,8 @@
+{
+    "fields": {
+        "age": "number",
+        "id": "number",
+        "name": "str"
+    },
+    "records": [{"id": 10, "age": 23, "name": "muslim"}, {"id": 1, "age": 23, "name":"nurlashko"},{"id": 14, "age": 27, "name": "test"}]
+}
