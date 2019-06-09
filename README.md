@@ -1,6 +1,10 @@
 # nursultan_db
 
-## Execute: python3 cmd.py
+## Requirements
+Python3
+
+## Execute
+python cmd.py
 
 ## Commands example:
 
