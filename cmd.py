@@ -77,7 +77,6 @@ def process_query(query):
 
 if __name__ == '__main__':
     try:
-        while True:
-            process_query(input().lower())
+        process_query(input().lower())
     except ValueError as error:
         print(error)
