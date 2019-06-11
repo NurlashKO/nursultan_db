@@ -5,5 +5,8 @@
         "count": "number",
         "price": "number"
     },
+    "indexes": [
+        "count"
+    ],
     "records": []
 }

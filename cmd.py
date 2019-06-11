@@ -5,7 +5,7 @@ from managers.index_manager import IndexManager
 
 sys.path.append(dirname(__file__) + '../')
 
-from cli.parsers import parse_create_table, parse_drop_table, parse_select, parse_delete_from
+from cli.parsers import parse_create_table, parse_drop_table, parse_select, parse_delete_from, parse_create_index
 from cli.utils import read_next
 from managers.table_manager import TableManager
 
@@ -19,6 +19,8 @@ def query_create_table(query, pos):
 
 # В. create index table_name on param1;
 def query_create_index(query, pos):
+    table_name, param = parse_create_index(query, pos)
+    TableManager().create_index(table=table_name, param=param)
     pass
 
 
@@ -73,8 +75,6 @@ def process_query(query):
 
 
 if __name__ == '__main__':
-    IndexManager()
-
     try:
         process_query(input().lower())
     except ValueError as error:

@@ -99,6 +99,20 @@ def parse_delete_from(query, pos):
     return table_name, condition
 
 
+def parse_create_index(query, pos):
+    table_name, pos = parse_table_name(query, pos)
+    word, pos = read_next(query, pos)
+    print(table_name)
+    print(word)
+    if word != 'on':
+        raise ValueError('Syntax error. Error parsing string ON at CREATE INDEX.')
+    param, pos = read_next(query, pos)
+    if query[pos] != ';':
+        raise ValueError("Syntax error. Extra data at the end of DROP TABLE command.")
+
+    return table_name, param
+
+
 def parse_drop_table(query, pos):
     command, pos = read_next(query, pos)
     if command != 'table':

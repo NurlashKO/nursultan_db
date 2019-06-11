@@ -5,8 +5,15 @@ from typing import Dict
 from cli.b_tree import BTree
 from cli.db_index import DatabaseIndex
 
+class Singleton(type):
+    _instances = {}
 
-class IndexManager:
+    def call(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).call(*args, **kwargs)
+        return cls._instances[cls]
+
+class IndexManager(metaclass=Singleton):
     def __init__(self, db: str = 'app'):
         self.indexes = {}
         directory = os.fsencode(f'{db}/.')
@@ -26,10 +33,10 @@ class IndexManager:
                             self.indexes[self.index_key(db=db, table=db_table)].insert(
                                 DatabaseIndex(record[index], record))
 
-    def index_key(self, db: str = 'app', table: str):
+    def index_key(self, db: str = 'app', table: str = None):
         return f'{db}/{table}'
 
-    def get(self, db: str = 'app', table: str, condition: Dict):
+    def get(self, db: str = 'app', table: str = None, condition: Dict = None):
         result = []
         for record in self.indexes[self.index_key(db=db, table=table)]:
             if eval(f"record.get(condition.get('field')) {condition.get('operator')} condition.get('value')"):
