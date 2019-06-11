@@ -44,11 +44,10 @@ def query_select(query, pos):
 
 # Г. delete from maytable where param2 < 2;
 def query_delete(query, pos):
-    table_name, condition = parse_delete_from(query, pos)
     pass
 
 
-def query_add(query, pos):
+def query_insert(query, pos):
     pass
 
 
@@ -62,6 +61,8 @@ def query_drop(query, pos):
 def process_query(query):
     query = query.lower()
     command, pos = read_next(query, 0)
+    if command == "insert":
+        return query_insert(query, pos)
     if command == "create":
         return query_create(query, pos)
     elif command == "select":
@@ -76,6 +77,7 @@ def process_query(query):
 
 if __name__ == '__main__':
     try:
-        process_query(input().lower())
+        while True:
+            process_query(input().lower())
     except ValueError as error:
         print(error)
