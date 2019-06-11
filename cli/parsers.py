@@ -1,5 +1,4 @@
-from operations import OPERATIONS
-from .utils import read_next, is_valid_table_and_param_name, parse_table_name
+from .utils import read_next, is_valid_table_and_param_name, parse_table_name, parse_condition
 
 
 def parse_create_table(query, pos):
@@ -63,22 +62,7 @@ def parse_select(query, pos):
 
     word, pos = read_next(query, pos)
     if word == 'where':
-        word, pos = read_next(query, pos)
-        if not is_valid_table_and_param_name(word):
-            raise ValueError('Syntax error. Invalid param name.')
-        condition['field'] = word
-
-        op = query[pos]
-        pos += 1
-        if not op in OPERATIONS:
-            raise ValueError('Syntax error. Error parsing SELECT WHERE operation.')
-        condition['operator'] = OPERATIONS[op]
-
-        word, pos = read_next(query, pos)
-        if not word.isnumeric():
-            raise ValueError('Syntax error. Error parsing SELECT WHERE value.')
-        condition['value'] = int(word)
-
+        condition, pos = parse_condition(query, pos)
         word, pos = read_next(query, pos)
 
     if word == 'limit':
@@ -90,6 +74,29 @@ def parse_select(query, pos):
     if query[pos] != ';':
         raise ValueError("Syntax error. Extra data at the end of DROP TABLE command.")
     return table_name, params, condition
+
+
+def parse_delete_from(query, pos):
+    condition = {
+        'field': None,
+        'operator': None,
+        'value': None,
+        'limit': None,
+    }
+    word, pos = read_next(query, pos)
+    if word != 'from':
+        raise ValueError('Syntax error. Error parsing at FROM.')
+    table_name, pos = parse_table_name(query, pos)
+    word, pos = read_next(query, pos)
+
+    if word == 'where':
+        condition, pos = parse_condition(query, pos)
+    else:
+        raise ValueError('Syntax error. Error parsing WHERE.')
+    if query[pos] != ';':
+        raise ValueError("Syntax error. Extra data at the end of DROP TABLE command.")
+
+    return table_name, condition
 
 
 def parse_drop_table(query, pos):

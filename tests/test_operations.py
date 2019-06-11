@@ -1,4 +1,4 @@
-from operations import TableManager
+from managers.table_manager import TableManager
 
 
 def test_create():

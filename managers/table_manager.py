@@ -4,6 +4,8 @@ from os.path import exists
 from types import MappingProxyType
 from typing import Tuple, Dict, Generator, Any
 
+from managers.index_manager import IndexManager
+
 OPERATION_LESS = "<"
 OPERATION_EQUAL = "="
 OPERATION_GREATER = ">"
@@ -30,7 +32,7 @@ class TableManager:
 
     def select(
             self, db: str = 'app', table: str = None,
-            requested_fields: Tuple = (), conditions: Tuple = (), limit: int = None
+            requested_fields: Tuple = (), condition: Dict, limit: int = None
     ) -> Generator[Dict, Any, None]:
         filepath: str = f'{db}/{table}.json'
         if not exists(path=filepath):
@@ -39,18 +41,21 @@ class TableManager:
             data = load(fp=file)
             fields: Dict = data.get('fields')
             records: list = data.get('records')
+            indexes : list = data.get('indexes')
             for requested_field in requested_fields:
                 if requested_field not in fields.keys():
                     raise ValueError(f'table doesn\'t have this field: {requested_field}')
-            for record in records:
-                for condition in conditions:
-                    if condition.get('field') == None:
-                        continue
-                    if condition.get('field') not in fields.keys():
-                        raise ValueError(f'table doesn\'t have this field: {condition.get("field")}')
-                    if fields.get(condition.get('field')) != 'number':
-                        raise ValueError('table supports only number filtering')
-                    if eval(f"not record.get(condition.get('field')) {condition.get('operator')} condition.get('value')"):
+
+            if condition.get('field') != None:
+                if condition.get('field') not in fields.keys():
+                    raise ValueError(f'table doesn\'t have this field: {condition.get("field")}')
+                if fields.get(condition.get('field')) != 'number':
+                    raise ValueError('table supports only number filtering')
+                if condition.get('field') in indexes:
+                    records = IndexManager().get(db=db, table=table, condition=condition)
+                else:
+                    for record in records:
+                        if eval(f"not record.get(condition.get('field')) {condition.get('operator')} condition.get('value')"):
                         records.remove(record)
             requested_records =  ({
                 requested_field: record.get(requested_field) for requested_field in requested_fields

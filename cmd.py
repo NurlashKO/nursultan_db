@@ -1,13 +1,13 @@
-# В. create index mytable_pk_index on mytable (param1);
-# Г. delete from maytable where param2 < 2;
 import sys
 from os.path import dirname
 
+from managers.index_manager import IndexManager
+
 sys.path.append(dirname(__file__) + '../')
 
-from cli.parsers import parse_create_table, parse_drop_table, parse_select
+from cli.parsers import parse_create_table, parse_drop_table, parse_select, parse_delete_from
 from cli.utils import read_next
-from operations import TableManager
+from managers.table_manager import TableManager
 
 
 # А. create table mytable (param1 number, param2 number, param3 string);
@@ -17,6 +17,7 @@ def query_create_table(query, pos):
     return table_name, params
 
 
+# В. create index table_name on param1;
 def query_create_index(query, pos):
     pass
 
@@ -39,7 +40,13 @@ def query_select(query, pos):
         print(value)
 
 
-def query_delete(command, pos):
+# Г. delete from maytable where param2 < 2;
+def query_delete(query, pos):
+    table_name, condition = parse_delete_from(query, pos)
+    pass
+
+
+def query_add(query, pos):
     pass
 
 
@@ -66,6 +73,8 @@ def process_query(query):
 
 
 if __name__ == '__main__':
+    IndexManager()
+
     try:
         process_query(input().lower())
     except ValueError as error:
